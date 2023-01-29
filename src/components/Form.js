@@ -1,14 +1,14 @@
 import { useState } from "react";
 import FormInput from "./FormInput";
 
-function Form() {
+function Form({ onSubmit }) {
   const [data, setData] = useState({
     name: "",
     address: "",
     email: "",
     number: "",
     gender: "",
-    city: "",
+    city: "Ahmedabad",
     termsandcondition: false,
   });
 
@@ -45,18 +45,14 @@ function Form() {
 
   const handleChange = (event) => {
     if (event.target.name === "termsandcondition") {
-     return setData({ ...data, [event.target.name]: event.target.checked });
+      return setData({ ...data, [event.target.name]: event.target.checked });
     }
     setData({ ...data, [event.target.name]: event.target.value });
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log(data);
-  };
-
   const field = inputs.map((input) => {
     if (input.name === "address") {
+      const { errorMassage } = input;
       return (
         <div key={input.id} className="formInput">
           <label>{input.label}</label>
@@ -65,6 +61,7 @@ function Form() {
             value={data[input.name]}
             {...input}
           />
+          <span>{errorMassage}</span>
         </div>
       );
     }
@@ -78,8 +75,25 @@ function Form() {
     );
   });
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const newData = { ...data, id: new Date().getTime().toString() };
+    onSubmit(newData);
+
+    setData({
+      name: "",
+      address: "",
+      email: "",
+      number: "",
+      gender: "",
+      city: "Ahmedabad",
+      termsandcondition: false,
+    });
+    console.log(data);
+  };
+
   return (
-    <div className='form'>
+    <div className="form">
       <form onSubmit={handleSubmit}>
         {field}
         <div className="gender">
@@ -88,6 +102,7 @@ function Form() {
             type="radio"
             name="gender"
             value="Male"
+            checked={data.gender === "Male"}
             onChange={handleChange}
           />
           <label>Male</label>
@@ -95,6 +110,7 @@ function Form() {
             type="radio"
             name="gender"
             value="Female"
+            checked={data.gender === "Female"}
             onChange={handleChange}
           />
           <label>Female</label>
@@ -115,7 +131,8 @@ function Form() {
             <input
               name="termsandcondition"
               type="checkbox"
-              defaultChecked={false}
+              checked={data.termsandcondition === true}
+              
               onChange={handleChange}
             />
             Check Me!
